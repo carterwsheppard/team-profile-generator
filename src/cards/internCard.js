@@ -1,3 +1,5 @@
+//intern template
+
 function createInternCards(internsArray) {
     htmlInterns = [];
     for(let i = 0; i < internsArray.length; i++) {

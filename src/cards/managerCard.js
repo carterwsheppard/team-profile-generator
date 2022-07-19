@@ -1,3 +1,5 @@
+//manager template
+
 function createManagerCard(manager) {
     return `
         <div class="card">

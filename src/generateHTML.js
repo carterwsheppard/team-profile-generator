@@ -1,8 +1,9 @@
+//import card templates
 const createManagerCard = require('./cards/managerCard');
 const createEngineerCards = require('./cards/engineerCard');
 const createInternCards = require('./cards/internCard')
 
-
+//generate overall page
 function generateWebPage(manager, engineersArray, internsArray) {
     return `
         <!DOCTYPE html>
