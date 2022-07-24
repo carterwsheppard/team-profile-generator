@@ -7,15 +7,15 @@ const fs = require('fs');
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
-const generateWebPage = require("./src/generateWebPage.js");
+const generateWebPage = require("./src/generateHTML.js");
 
 //import functions
 const writeToFile = require('./src/writeFile');
 
 //variables
 let manager;
-let engineers = [];
-let interns = [];
+let engineersArray = [];
+let internsArray = [];
 
 //self identification of user (manager as outlined in description)
 const initialPrompt = () => {
@@ -48,21 +48,20 @@ const initialPrompt = () => {
     ])
     .then(data => {
         createManager(data);
-        employeePrompt();
+        return employeePrompt();
     })
     .then(() => {
         return generateWebPage(manager, engineersArray,internsArray);
     })
     .then(webPage => writeToFile(webPage));
 }
+//use the model to create a new manager
+const createManager = data => {
+    manager = new Manager(data.name, data.id, data.email, data.officeNumber);
+}
 
-    //use the model to create a new manager
-    const createManager = data => {
-        manager = new Manager(data.name, data.id, data.email, data.officeNumber);
-    }
-
-    //determine the next type of employee to check
-    const employeePrompt = () => {
+//determine the next type of employee to check
+const employeePrompt = () => {
         return inquirer.prompt([
             {
                 type: "list",
@@ -76,12 +75,88 @@ const initialPrompt = () => {
                 return;
             }
             else if(data.employeeType === "Engineer") {
-                engineerPrompt();
+               return engineerPrompt();
             }
             else if(data.employeeType === "Intern") {
-                internPrompt();
+               return internPrompt();
             }
         })
-    }
+}
 
-    
+const engineerPrompt = () => {
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'name',
+            message: "What is the Engineer's name?"
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "What is the Engineer's id"
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "What is the Engineer's email?"
+        },
+        {
+            type: "input",
+            name: "github",
+            message: "What is the Engineer's github name?"
+        }
+    ])
+    .then(data => {
+        createEngineer(data);
+        return employeePrompt();
+    }).then(() => {
+        return generateWebPage(manager, engineersArray, internsArray);
+    })
+    .then(webPage => writeToFile(webPage));
+}
+
+const internPrompt = () => {
+    return inquirer.prompt([
+        {
+            type: 'input',
+            name: 'name',
+            message: "What is the Intern's name?"
+        },
+        {
+            type: "input",
+            name: "id",
+            message: "What is the Intern's id"
+        },
+        {
+            type: "input",
+            name: "email",
+            message: "What is the Intern's email?"
+        },
+        {
+            type: "input",
+            name: "school",
+            message: "What is the Intern's school name?"
+        }
+    ])
+    .then(data => {
+        createIntern(data);
+        employeePrompt();
+    }).then(() => {
+        return generateWebPage(manager, engineersArray, internsArray);
+    })
+    .then(webPage => writeToFile(webPage));
+}
+
+const createEngineer = data => {
+    let engineer = new Engineer(data.name, data.id, data.email, data.github);
+
+    engineersArray.push(engineer);
+}
+
+const createIntern = data => {
+    let intern = new Intern(data.name, data.id, data.email, data.school);
+
+    internsArray.push(intern);
+}
+
+initialPrompt();
